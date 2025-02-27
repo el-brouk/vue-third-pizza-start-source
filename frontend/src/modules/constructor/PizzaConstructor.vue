@@ -3,16 +3,18 @@
     <app-drop @drop="emit('drop', $event.value)">
       <div class="pizza" :class="`pizza--foundation--${dough}-${sauce}`">
         <div class="pizza__wrapper">
-          <div
-            v-for="(value, key) in pizzaIngredients"
-            :key="key"
-            class="pizza__filling"
-            :class="[
-              `pizza__filling--${key}`,
-              value === TWO_INGREDIENTS && 'pizza__filling--second',
-              value === THREE_INGREDIENTS && 'pizza__filling--third',
-            ]"
-          />
+          <transition-group name="ingredients">
+            <div
+              v-for="item in ingredients"
+              :key="item.id"
+              class="pizza__filling"
+              :class="[
+                `pizza__filling--${item.value}`,
+                item.quantity === TWO_INGREDIENTS && 'pizza__filling--second',
+                item.quantity === THREE_INGREDIENTS && 'pizza__filling--third',
+              ]"
+            />
+          </transition-group>
         </div>
       </div>
     </app-drop>
@@ -20,13 +22,12 @@
 </template>
 
 <script setup>
-import { computed } from "vue"
 import AppDrop from "@/common/components/AppDrop.vue"
 
 const TWO_INGREDIENTS = 2
 const THREE_INGREDIENTS = 3
 
-const props = defineProps({
+defineProps({
   dough: {
     type: String,
     default: "light",
@@ -36,35 +37,46 @@ const props = defineProps({
     default: "tomato",
   },
   ingredients: {
-    type: Object,
-    default: () => ({}),
+    type: Array,
+    default: () => [],
   },
 })
 
 const emit = defineEmits(["drop"])
 
-const pizzaIngredients = computed(() => {
-  /*
-   * props.ingredients - это объект с ингредиентами вида { ингредиент: количество }
-   * при помощи reduce нам нужно оставить только те, количество которые больше 0
-   * для этого перебираем каждую пару [ингредиент, количество]
-   * и если количество больше 0, добавляем в объект-результат
-   */
-  return Object.entries(props.ingredients).reduce((result, entry) => {
-    /* [ингредиент, количество] */
-    const [key, value] = entry
+// const pizzaIngredients = computed(() => {
+//   /*
+//    * props.ingredients - это объект с ингредиентами вида { ингредиент: количество }
+//    * при помощи reduce нам нужно оставить только те, количество которые больше 0
+//    * для этого перебираем каждую пару [ингредиент, количество]
+//    * и если количество больше 0, добавляем в объект-результат
+//    */
+//   return Object.entries(props.ingredients).reduce((result, entry) => {
+//     /* [ингредиент, количество] */
+//     const [key, value] = entry
 
-    if (value > 0) {
-      /* ингредиент присутствует в пицце */
-      result[key] = value
-    }
+//     if (value > 0) {
+//       /* ингредиент присутствует в пицце */
+//       result[key] = value
+//     }
 
-    return result
-  }, {})
-})
+//     return result
+//   }, {})
+// })
 </script>
 
 <style lang="scss" scoped>
+.ingredients-enter-active,
+.ingredients-leave-active {
+  transition: all 0.5s ease;
+}
+
+.ingredients-enter-from,
+.ingredients-leave-to {
+  transform: scale(0);
+  opacity: 0;
+}
+
 .content__constructor {
   width: 315px;
   margin-top: 25px;
@@ -133,91 +145,91 @@ const pizzaIngredients = computed(() => {
   &--ananas,
   &--ananas.pizza__filling--second::before,
   &--ananas.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/ananas.svg");
+    background-image: url("/api/public/img/filling-big/ananas.svg");
   }
 
   &--bacon,
   &--bacon.pizza__filling--second::before,
   &--bacon.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/bacon.svg");
+    background-image: url("/api/public/img/filling-big/bacon.svg");
   }
 
   &--blue_cheese,
   &--blue.pizza__filling--second::before,
   &--blue.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/blue_cheese.svg");
+    background-image: url("/api/public/img/filling-big/blue_cheese.svg");
   }
 
   &--cheddar,
   &--cheddar.pizza__filling--second::before,
   &--cheddar.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/cheddar.svg");
+    background-image: url("/api/public/img/filling-big/cheddar.svg");
   }
 
   &--chile,
   &--chile.pizza__filling--second::before,
   &--chile.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/chile.svg");
+    background-image: url("/api/public/img/filling-big/chile.svg");
   }
 
   &--ham,
   &--ham.pizza__filling--second::before,
   &--ham.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/ham.svg");
+    background-image: url("/api/public/img/filling-big/ham.svg");
   }
 
   &--jalapeno,
   &--jalapeno.pizza__filling--second::before,
   &--jalapeno.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/jalapeno.svg");
+    background-image: url("/api/public/img/filling-big/jalapeno.svg");
   }
 
   &--mozzarella,
   &--mozzarella.pizza__filling--second::before,
   &--mozzarella.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/mozzarella.svg");
+    background-image: url("/api/public/img/filling-big/mozzarella.svg");
   }
 
   &--mushrooms,
   &--mushrooms.pizza__filling--second::before,
   &--mushrooms.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/mushrooms.svg");
+    background-image: url("/api/public/img/filling-big/mushrooms.svg");
   }
 
   &--olives,
   &--olives.pizza__filling--second::before,
   &--olives.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/olives.svg");
+    background-image: url("/api/public/img/filling-big/olives.svg");
   }
 
   &--onion,
   &--onion.pizza__filling--second::before,
   &--onion.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/onion.svg");
+    background-image: url("/api/public/img/filling-big/onion.svg");
   }
 
   &--parmesan,
   &--parmesan.pizza__filling--second::before,
   &--parmesan.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/parmesan.svg");
+    background-image: url("/api/public/img/filling-big/parmesan.svg");
   }
 
   &--salami,
   &---salami.pizza__filling--second::before,
   &---salami.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/salami.svg");
+    background-image: url("/api/public/img/filling-big/salami.svg");
   }
 
   &--salmon,
   &--salmon.pizza__filling--second::before,
   &--salmon.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/salmon.svg");
+    background-image: url("/api/public/img/filling-big/salmon.svg");
   }
 
   &--tomatoes,
   &--tomatoes.pizza__filling--second::before,
   &--tomatoes.pizza__filling--third::after {
-    background-image: url("@/assets/img/filling-big/tomatoes.svg");
+    background-image: url("/api/public/img/filling-big/tomatoes.svg");
   }
 }
 
@@ -234,19 +246,19 @@ const pizzaIngredients = computed(() => {
   background-size: 100%;
 
   &--foundation--large-creamy {
-    background-image: url("@/assets/img/foundation/big-creamy.svg");
+    background-image: url("/api/public/img/foundation/big-creamy.svg");
   }
 
   &--foundation--large-tomato {
-    background-image: url("@/assets/img/foundation/big-tomato.svg");
+    background-image: url("/api/public/img/foundation/big-tomato.svg");
   }
 
   &--foundation--light-creamy {
-    background-image: url("@/assets/img/foundation/small-creamy.svg");
+    background-image: url("/api/public/img/foundation/small-creamy.svg");
   }
 
   &--foundation--light-tomato {
-    background-image: url("@/assets/img/foundation/small-tomato.svg");
+    background-image: url("/api/public/img/foundation/small-tomato.svg");
   }
 }
 </style>
